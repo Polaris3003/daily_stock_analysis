@@ -672,11 +672,10 @@ class StockTrendAnalyzer:
 
         # 计算 RSV
         diff = high_n - low_n
-        rsv = np.where(diff > 0, (df['close'] - low_n) / diff * 100, np.nan)
+        rsv = np.where(diff > 0, (df['close'] - low_n) / diff * 100, 50.0)
 
         # 经典递推平滑：K = (2/3)*prev_K + (1/3)*RSV
-        alpha_k = 1.0 / self.KDJ_K_SMOOTH  # 1/3
-        alpha_d = 1.0 / self.KDJ_D_SMOOTH  # 1/3
+        alpha = 1.0 / self.KDJ_K_SMOOTH  # 1/3
         k_values = np.full(len(rsv), 50.0)
         d_values = np.full(len(rsv), 50.0)
 
@@ -685,9 +684,9 @@ class StockTrendAnalyzer:
                 k_values[i] = k_values[i - 1] if i > 0 else 50.0
             else:
                 prev_k = k_values[i - 1] if i > 0 else 50.0
-                k_values[i] = (1 - alpha_k) * prev_k + alpha_k * rsv[i]
+                k_values[i] = (1 - alpha) * prev_k + alpha * rsv[i]
             prev_d = d_values[i - 1] if i > 0 else 50.0
-            d_values[i] = (1 - alpha_d) * prev_d + alpha_d * k_values[i]
+            d_values[i] = (1 - alpha) * prev_d + alpha * k_values[i]
 
         j_values = 3 * k_values - 2 * d_values
 

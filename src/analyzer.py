@@ -1245,9 +1245,9 @@ class GeminiAnalyzer:
 | 系统信号 | {trend.get('buy_signal', '未知')} | |
 | 系统评分 | {trend.get('signal_score', 0)}/100 | |
 | **MACD** | **{trend.get('macd_status', '未知')}** | {trend.get('macd_signal', '')} |
-| **RSI(12)** | **{trend.get('rsi_12', 'N/A')}** | {trend.get('rsi_signal', '')} |
-| **KDJ** | **K={trend.get('kdj_k', 'N/A'):.1f} D={trend.get('kdj_d', 'N/A'):.1f} J={trend.get('kdj_j', 'N/A'):.1f}** | {trend.get('kdj_signal', '')} |
-| **布林带** | **{trend.get('boll_status', '未知')}** | 带宽{trend.get('boll_width', 0):.1f}% 位置{trend.get('boll_position', 0):.0f}% |
+| **RSI(12)** | **{self._safe_float(trend.get('rsi_12'))}** | {trend.get('rsi_signal', '')} |
+| **KDJ** | **K={self._safe_float(trend.get('kdj_k')):.1f} D={self._safe_float(trend.get('kdj_d')):.1f} J={self._safe_float(trend.get('kdj_j')):.1f}** | {trend.get('kdj_signal', '')} |
+| **布林带** | **{trend.get('boll_status', '未知')}** | 带宽{self._safe_float(trend.get('boll_width')):.1f}% 位置{self._safe_float(trend.get('boll_position')):.0f}% |
 
 #### 系统分析理由
 **买入理由**：
@@ -1375,6 +1375,16 @@ class GeminiAnalyzer:
             return f"{float(value):.2f}"
         except (TypeError, ValueError):
             return 'N/A'
+
+    @staticmethod
+    def _safe_float(value, default: float = 0.0) -> float:
+        """安全地将值转换为 float，转换失败时返回 default"""
+        if value is None:
+            return default
+        try:
+            return float(value)
+        except (TypeError, ValueError):
+            return default
 
     def _build_market_snapshot(self, context: Dict[str, Any]) -> Dict[str, Any]:
         """构建当日行情快照（展示用）"""
