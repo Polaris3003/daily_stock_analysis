@@ -35,7 +35,12 @@ jobs:
       
       - name: 检出代码
         uses: actions/checkout@v4
-      
+        
+      - name: 安装系统依赖 (wkhtmltopdf)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wkhtmltopdf
+          
       - name: 设置 Python 环境
         uses: actions/setup-python@v5
         with:
@@ -142,6 +147,8 @@ jobs:
           MARKET_REVIEW_ENABLED: ${{ vars.MARKET_REVIEW_ENABLED || secrets.MARKET_REVIEW_ENABLED || 'true' }}
           ANALYSIS_DELAY: ${{ vars.ANALYSIS_DELAY || secrets.ANALYSIS_DELAY || '0' }}
           MARKET_REVIEW_REGION: ${{ vars.MARKET_REVIEW_REGION || secrets.MARKET_REVIEW_REGION || 'us' }}
+
+          MARKDOWN_TO_IMAGE_CHANNELS: ${{ vars.MARKDOWN_TO_IMAGE_CHANNELS || secrets.MARKDOWN_TO_IMAGE_CHANNELS }}
           # ==========================================
           # 系统配置
           # ==========================================
